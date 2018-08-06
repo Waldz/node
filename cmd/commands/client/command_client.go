@@ -18,6 +18,9 @@
 package client
 
 import (
+	"path/filepath"
+	"time"
+
 	log "github.com/cihub/seelog"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/mysterium/node/client/connection"
@@ -35,9 +38,13 @@ import (
 	"github.com/mysterium/node/service_discovery/dto"
 	"github.com/mysterium/node/tequilapi"
 	tequilapi_endpoints "github.com/mysterium/node/tequilapi/endpoints"
-	"path/filepath"
-	"time"
 )
+
+// DefaultCommand creates new client using default CommandOptions
+func DefaultCommand() *Command {
+	options, _ := ParseArguments([]string{"foo"})
+	return NewCommand(options)
+}
 
 // NewCommand function creates new client command by given options
 func NewCommand(options CommandOptions) *Command {
@@ -117,10 +124,10 @@ type Command struct {
 func (cmd *Command) Start() error {
 	log.Infof("Starting Mysterium Client (%s)", metadata.VersionAsString())
 
-	err := cmd.checkOpenvpn()
-	if err != nil {
-		return err
-	}
+	// err := cmd.checkOpenvpn()
+	// if err != nil {
+	// 	return err
+	// }
 
 	originalLocation, err := cmd.originalLocationCache.RefreshAndGet()
 	if err != nil {

@@ -23,7 +23,7 @@ import (
 	"strings"
 
 	"github.com/mysteriumnetwork/node/openvpn"
-	"github.com/mysteriumnetwork/node/openvpn/extcmd/management"
+	"github.com/mysteriumnetwork/node/openvpn/management"
 )
 
 // Callback is called when openvpn process state changes

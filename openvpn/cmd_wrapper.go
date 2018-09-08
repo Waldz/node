@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cmd
+package openvpn
 
 import (
 	"bufio"
@@ -27,9 +27,9 @@ import (
 	log "github.com/cihub/seelog"
 )
 
-// NewWrapper returns process wrapper for given executable
-func NewWrapper(executablePath, logPrefix string) *Wrapper {
-	return &Wrapper{
+// NewCmdWrapper returns process wrapper for given executable
+func NewCmdWrapper(executablePath, logPrefix string) *CmdWrapper {
+	return &CmdWrapper{
 		logPrefix:          logPrefix,
 		executablePath:     executablePath,
 		CmdExitError:       make(chan error, 1), //channel should have capacity to hold single process exit error
@@ -38,8 +38,8 @@ func NewWrapper(executablePath, logPrefix string) *Wrapper {
 	}
 }
 
-// Wrapper struct defines process wrapper which handles clean shutdown, tracks executable exit errors, logs stdout and stderr to logger
-type Wrapper struct {
+// CmdWrapper struct defines process wrapper which handles clean shutdown, tracks executable exit errors, logs stdout and stderr to logger
+type CmdWrapper struct {
 	logPrefix          string
 	executablePath     string
 	CmdExitError       chan error
@@ -49,7 +49,7 @@ type Wrapper struct {
 }
 
 // Start underlying binary defined by process wrapper with given arguments
-func (cw *Wrapper) Start(arguments []string) (err error) {
+func (cw *CmdWrapper) Start(arguments []string) (err error) {
 	// Create the command
 	log.Info(cw.logPrefix, "Starting cmd: ", cw.executablePath, " with arguments: ", arguments)
 	cmd := exec.Command(cw.executablePath, arguments...)
@@ -85,19 +85,19 @@ func (cw *Wrapper) Start(arguments []string) (err error) {
 }
 
 // Wait function wait until executable exits and then returns exit error reported by executable
-func (cw *Wrapper) Wait() error {
+func (cw *CmdWrapper) Wait() error {
 	return <-cw.CmdExitError
 }
 
 // Stop function stops (or sends request to stop) underlying executable and waits until stdout/stderr and shutdown monitors are finished
-func (cw *Wrapper) Stop() {
+func (cw *CmdWrapper) Stop() {
 	cw.closesOnce.Do(func() {
 		close(cw.cmdShutdownStarted)
 	})
 	cw.cmdShutdownWaiter.Wait()
 }
 
-func (cw *Wrapper) outputToLog(output io.ReadCloser, streamPrefix string) {
+func (cw *CmdWrapper) outputToLog(output io.ReadCloser, streamPrefix string) {
 	scanner := bufio.NewScanner(output)
 	for scanner.Scan() {
 		log.Trace(cw.logPrefix, streamPrefix, scanner.Text())
@@ -109,12 +109,12 @@ func (cw *Wrapper) outputToLog(output io.ReadCloser, streamPrefix string) {
 	}
 }
 
-func (cw *Wrapper) waitForExit(cmd *exec.Cmd) {
+func (cw *CmdWrapper) waitForExit(cmd *exec.Cmd) {
 	err := cmd.Wait()
 	cw.CmdExitError <- err
 }
 
-func (cw *Wrapper) waitForShutdown(cmd *exec.Cmd) {
+func (cw *CmdWrapper) waitForShutdown(cmd *exec.Cmd) {
 	<-cw.cmdShutdownStarted
 	//First - shutdown gracefully by sending SIGINT (the only two signals guaranteed to be present in all OS'es SIGINT and SIGKILL)
 	//TODO - add timer and send SIGKILL after timeout?

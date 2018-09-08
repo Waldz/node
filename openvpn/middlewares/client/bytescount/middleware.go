@@ -22,7 +22,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/mysteriumnetwork/node/openvpn/extcmd/management"
+	"github.com/mysteriumnetwork/node/openvpn/management"
 )
 
 // SessionStatsHandler is invoked when middleware receives statistics

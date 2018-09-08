@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cmd
+package openvpn
 
 import (
 	"sync"
@@ -26,7 +26,7 @@ import (
 )
 
 func TestWaitAndStopProcessDoesNotDeadLocks(t *testing.T) {
-	process := NewWrapper("testdata/infinite-loop.sh", "[process-log] ")
+	process := NewCmdWrapper("testdata/infinite-loop.sh", "[process-log] ")
 	processStarted := sync.WaitGroup{}
 	processStarted.Add(1)
 
@@ -49,18 +49,18 @@ func TestWaitAndStopProcessDoesNotDeadLocks(t *testing.T) {
 	select {
 	case <-processWaitExited:
 	case <-time.After(100 * time.Millisecond):
-		assert.Fail(t, "Wrapper.Wait() didn't return in 100 miliseconds")
+		assert.Fail(t, "CmdWrapper.Wait() didn't return in 100 miliseconds")
 	}
 
 	select {
 	case <-processStopExited:
 	case <-time.After(100 * time.Millisecond):
-		assert.Fail(t, "Wrapper.Stop() didn't return in 100 miliseconds")
+		assert.Fail(t, "CmdWrapper.Stop() didn't return in 100 miliseconds")
 	}
 }
 
 func TestWaitReturnsIfProcessDies(t *testing.T) {
-	process := NewWrapper("testdata/100-milisec-process.sh", "[process-log] ")
+	process := NewCmdWrapper("testdata/100-milisec-process.sh", "[process-log] ")
 	processWaitExited := make(chan int, 1)
 
 	go func() {
@@ -72,6 +72,6 @@ func TestWaitReturnsIfProcessDies(t *testing.T) {
 	select {
 	case <-processWaitExited:
 	case <-time.After(500 * time.Millisecond):
-		assert.Fail(t, "Wrapper.Wait() didn't return on time")
+		assert.Fail(t, "CmdWrapper.Wait() didn't return on time")
 	}
 }

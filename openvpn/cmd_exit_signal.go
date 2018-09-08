@@ -1,3 +1,5 @@
+// +build !windows
+
 /*
  * Copyright (C) 2017 The "MysteriumNetwork/node" Authors.
  *
@@ -15,33 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package extcmd
+package openvpn
 
-import (
-	"testing"
-	"time"
+import "syscall"
 
-	"github.com/mysteriumnetwork/node/openvpn/config"
-	"github.com/stretchr/testify/assert"
-)
-
-func TestOpenvpnProcessStartsAndStopsSuccessfully(t *testing.T) {
-	process := NewOpenvpnProcess("testdata/openvpn-mock-client.sh", &config.GenericConfig{})
-
-	err := process.Start()
-	assert.NoError(t, err)
-
-	time.Sleep(200 * time.Millisecond)
-
-	process.Stop()
-
-	err = process.Wait()
-	assert.NoError(t, err)
-}
-
-func TestOpenvpnProcessStartReportsErrorIfCmdWrapperDiesTooEarly(t *testing.T) {
-	process := NewOpenvpnProcess("testdata/failing-openvpn-mock-client.sh", &config.GenericConfig{})
-
-	err := process.Start()
-	assert.Error(t, err)
-}
+// by default send SIGINT as exit signal to cmd wrapper. However on windows SIGINT is not handled (yet?)
+// take a look at cmd_exit_signal_windows.go
+var exitSignal = syscall.SIGINT

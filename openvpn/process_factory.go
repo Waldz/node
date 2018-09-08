@@ -1,4 +1,4 @@
-// +build !windows
+// +build !linux
 
 /*
  * Copyright (C) 2017 The "MysteriumNetwork/node" Authors.
@@ -17,10 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cmd
+package openvpn
 
-import "syscall"
+import (
+	"github.com/mysteriumnetwork/node/openvpn/config"
+	"github.com/mysteriumnetwork/node/openvpn/management"
+)
 
-// by default send SIGINT as exit signal to cmd wrapper. However on windows SIGINT is not handled (yet?)
-// take a look at cmd_exit_signal_windows.go
-var exitSignal = syscall.SIGINT
+// CreateNewProcess creates new openvpn process with given config params
+func CreateNewProcess(openvpnBinary string, config *config.GenericConfig, middlewares ...management.Middleware) *OpenvpnProcess {
+	config.SetDevice("tun")
+	return NewOpenvpnProcess(openvpnBinary, config, middlewares...)
+}

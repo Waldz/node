@@ -1,3 +1,5 @@
+// +build linux
+
 /*
  * Copyright (C) 2017 The "MysteriumNetwork/node" Authors.
  *
@@ -15,26 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package extcmd
+package openvpn
 
 import (
-	"testing"
-
-	"github.com/stretchr/testify/assert"
+	"github.com/mysteriumnetwork/node/openvpn/config"
+	"github.com/mysteriumnetwork/node/openvpn/management"
 )
 
-func TestErrorIsReturnedOnBadBinaryPath(t *testing.T) {
-	assert.Error(t, CheckOpenvpnBinary("non-existent-binary"))
-}
-
-func TestErrorIsReturnedOnExitCodeZero(t *testing.T) {
-	assert.Error(t, CheckOpenvpnBinary("testdata/exit-with-zero.sh"))
-}
-
-func TestNoErrorIsReturnedOnExitCodeOne(t *testing.T) {
-	assert.NoError(t, CheckOpenvpnBinary("testdata/openvpn-version.sh"))
-}
-
-func TestNoErrorIsReturnedOnOpenvpnWithCustomBuild(t *testing.T) {
-	assert.NoError(t, CheckOpenvpnBinary("testdata/openvpn-version-custom-tag.sh"))
+// CreateNewProcess function creates new linux process and overrides default function in linux environment
+func CreateNewProcess(openvpnBinary string, config *config.GenericConfig, middlewares ...management.Middleware) *LinuxOpenvpnProcess {
+	return NewLinuxProcess(openvpnBinary, config, middlewares...)
 }

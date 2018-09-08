@@ -18,15 +18,14 @@
 package openvpn
 
 import (
-	"github.com/mysteriumnetwork/node/openvpn/extcmd"
-	"github.com/mysteriumnetwork/node/openvpn/extcmd/management"
+	"github.com/mysteriumnetwork/node/openvpn/management"
 	"github.com/mysteriumnetwork/node/openvpn/tls"
 )
 
 // NewServer constructs new openvpn server instance
 func NewServer(openvpnBinary string, generateConfig ServerConfigGenerator, middlewares ...management.Middleware) Process {
 	serverConfig := generateConfig()
-	return extcmd.CreateNewProcess(openvpnBinary, serverConfig.GenericConfig, middlewares...)
+	return CreateNewProcess(openvpnBinary, serverConfig.GenericConfig, middlewares...)
 }
 
 // ServerConfigGenerator callback returns generated server config

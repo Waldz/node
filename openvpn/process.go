@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package extcmd
+package openvpn
 
 import (
 	"errors"
-	"github.com/mysteriumnetwork/node/openvpn/config"
-	"github.com/mysteriumnetwork/node/openvpn/extcmd/cmd"
-	"github.com/mysteriumnetwork/node/openvpn/extcmd/management"
-	"github.com/mysteriumnetwork/node/openvpn/extcmd/tun"
 	"sync"
 	"time"
+
+	"github.com/mysteriumnetwork/node/openvpn/config"
+	"github.com/mysteriumnetwork/node/openvpn/management"
+	"github.com/mysteriumnetwork/node/openvpn/tun"
 )
 
 type tunnelSetup interface {
@@ -36,7 +36,7 @@ type OpenvpnProcess struct {
 	tunSetup   tunnelSetup
 	config     *config.GenericConfig
 	management *management.Management
-	cmd        *cmd.Wrapper
+	cmd        *CmdWrapper
 }
 
 func NewOpenvpnProcess(openvpnBinary string, config *config.GenericConfig, middlewares ...management.Middleware) *OpenvpnProcess {
@@ -44,7 +44,7 @@ func NewOpenvpnProcess(openvpnBinary string, config *config.GenericConfig, middl
 		tunSetup:   tun.NewSetup(),
 		config:     config,
 		management: management.NewManagement(management.LocalhostOnRandomPort, "[client-management] ", middlewares...),
-		cmd:        cmd.NewWrapper(openvpnBinary, "[openvpn-process] "),
+		cmd:        NewCmdWrapper(openvpnBinary, "[openvpn-process] "),
 	}
 }
 

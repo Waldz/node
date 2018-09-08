@@ -22,7 +22,7 @@ import (
 
 	log "github.com/cihub/seelog"
 	"github.com/mysteriumnetwork/node/openvpn"
-	"github.com/mysteriumnetwork/node/openvpn/extcmd/management"
+	"github.com/mysteriumnetwork/node/openvpn/management"
 )
 
 // CredentialsProvider returns client's current auth primitives (i.e. customer identity signature / node's sessionId)

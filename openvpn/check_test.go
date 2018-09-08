@@ -15,10 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package wrapper
+package openvpn
 
-import "syscall"
+import (
+	"testing"
 
-// on windows env the only signal supported is SIGKILL to stop running process
-// according to os/exec_windows.go line 70 of standard library
-var exitSignal = syscall.SIGKILL
+	"github.com/stretchr/testify/assert"
+)
+
+func TestErrorIsReturnedOnBadBinaryPath(t *testing.T) {
+	assert.Error(t, CheckOpenvpnBinary("non-existent-binary"))
+}
+
+func TestErrorIsReturnedOnExitCodeZero(t *testing.T) {
+	assert.Error(t, CheckOpenvpnBinary("testdata/exit-with-zero.sh"))
+}
+
+func TestNoErrorIsReturnedOnExitCodeOne(t *testing.T) {
+	assert.NoError(t, CheckOpenvpnBinary("testdata/openvpn-version.sh"))
+}
+
+func TestNoErrorIsReturnedOnOpenvpnWithCustomBuild(t *testing.T) {
+	assert.NoError(t, CheckOpenvpnBinary("testdata/openvpn-version-custom-tag.sh"))
+}

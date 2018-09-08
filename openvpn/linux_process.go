@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package extcmd
+package openvpn
 
 import (
 	"sync"
 
 	log "github.com/cihub/seelog"
 	"github.com/mysteriumnetwork/node/openvpn/config"
-	"github.com/mysteriumnetwork/node/openvpn/extcmd/management"
-	"github.com/mysteriumnetwork/node/openvpn/extcmd/tun/linux"
+	"github.com/mysteriumnetwork/node/openvpn/linux"
+	"github.com/mysteriumnetwork/node/openvpn/management"
 )
 
 const linuxProcess = "[Linux openvpn process] "

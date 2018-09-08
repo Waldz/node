@@ -1,5 +1,3 @@
-// +build linux
-
 /*
  * Copyright (C) 2017 The "MysteriumNetwork/node" Authors.
  *
@@ -17,14 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package extcmd
+package openvpn
 
 import (
+	"testing"
+	"time"
+
 	"github.com/mysteriumnetwork/node/openvpn/config"
-	"github.com/mysteriumnetwork/node/openvpn/extcmd/management"
+	"github.com/stretchr/testify/assert"
 )
 
-// CreateNewProcess function creates new linux process and overrides default function in linux environment
-func CreateNewProcess(openvpnBinary string, config *config.GenericConfig, middlewares ...management.Middleware) *LinuxOpenvpnProcess {
-	return NewLinuxProcess(openvpnBinary, config, middlewares...)
+func TestOpenvpnProcessStartsAndStopsSuccessfully(t *testing.T) {
+	process := NewOpenvpnProcess("testdata/openvpn-mock-client.sh", &config.GenericConfig{})
+
+	err := process.Start()
+	assert.NoError(t, err)
+
+	time.Sleep(200 * time.Millisecond)
+
+	process.Stop()
+
+	err = process.Wait()
+	assert.NoError(t, err)
+}
+
+func TestOpenvpnProcessStartReportsErrorIfCmdWrapperDiesTooEarly(t *testing.T) {
+	process := NewOpenvpnProcess("testdata/failing-openvpn-mock-client.sh", &config.GenericConfig{})
+
+	err := process.Start()
+	assert.Error(t, err)
 }

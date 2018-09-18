@@ -28,8 +28,3 @@ type Session struct {
 	Config     ServiceConfiguration
 	ConsumerID identity.Identity
 }
-
-// Manager defines methods for session management
-type Manager interface {
-	Create(identity.Identity) (Session, error)
-}

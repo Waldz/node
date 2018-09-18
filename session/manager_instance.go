@@ -32,9 +32,9 @@ type IDGenerator func() SessionID
 // SaveCallback stores newly started sessions
 type SaveCallback func(Session)
 
-// NewManager returns session manager which maintains a map of session id -> session
-func NewManager(idGenerator IDGenerator, configProvider ServiceConfigProvider, saveCallback SaveCallback) *manager {
-	return &manager{
+// NewManager returns new session ManagerInstance
+func NewManager(idGenerator IDGenerator, configProvider ServiceConfigProvider, saveCallback SaveCallback) *ManagerInstance {
+	return &ManagerInstance{
 		generateID:     idGenerator,
 		generateConfig: configProvider,
 		saveSession:    saveCallback,
@@ -42,7 +42,8 @@ func NewManager(idGenerator IDGenerator, configProvider ServiceConfigProvider, s
 	}
 }
 
-type manager struct {
+// ManagerInstance knows how to start and provision session
+type ManagerInstance struct {
 	generateID     IDGenerator
 	generateConfig ServiceConfigProvider
 	saveSession    SaveCallback
@@ -50,7 +51,7 @@ type manager struct {
 }
 
 // Create creates session instance. Multiple sessions per peerID is possible in case different services are used
-func (manager *manager) Create(peerID identity.Identity) (sessionInstance Session, err error) {
+func (manager *ManagerInstance) Create(peerID identity.Identity) (sessionInstance Session, err error) {
 	manager.creationLock.Lock()
 	defer manager.creationLock.Unlock()
 
